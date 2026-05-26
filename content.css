@@ -1,0 +1,55 @@
+/* AI Career Assistant — Floating Button */
+
+#ai-career-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999999;
+  cursor: pointer;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+#ai-career-fab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #4361ee, #7209b7);
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(67,97,238,0.4);
+  transition: all 0.25s cubic-bezier(.4,0,.2,1);
+  user-select: none;
+  white-space: nowrap;
+}
+
+#ai-career-fab:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 28px rgba(67,97,238,0.5);
+}
+
+#ai-career-fab svg { flex-shrink: 0; }
+
+#ai-career-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: #1a1d2e;
+  color: #fff;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.2s;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+}
+
+#ai-career-float:hover #ai-career-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}

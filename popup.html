@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Career Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f5f7ff;
+      --surface: #ffffff;
+      --surface2: #f0f2ff;
+      --border: #e2e5f0;
+      --accent: #4361ee;
+      --accent2: #7209b7;
+      --success: #06d6a0;
+      --warn: #f77f00;
+      --danger: #ef233c;
+      --text: #1a1d2e;
+      --muted: #8890ab;
+      --gradient: linear-gradient(135deg, #4361ee, #7209b7);
+      --shadow: 0 4px 20px rgba(67,97,238,0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 390px;
+      min-height: 520px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 13px;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--gradient);
+      padding: 14px 16px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0;
+      backdrop-filter: blur(4px);
+    }
+    .header-text h1 { font-size: 14px; font-weight: 700; color: #fff; }
+    .header-text p { font-size: 10px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .status-pill {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px; padding: 4px 10px;
+      font-size: 10px; font-weight: 600; color: #fff;
+    }
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px var(--success);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex: 1;
+      min-width: 72px;
+      padding: 10px 4px 9px;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-family: 'Inter', sans-serif;
+    }
+    .tab-icon { font-size: 15px; }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+    /* ── Panels ── */
+    .panel { display: none; padding: 14px 16px; }
+    .panel.active { display: block; }
+
+    /* ── Typography ── */
+    .label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .section-title {
+      font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Form elements ── */
+    textarea, input[type="text"], input[type="password"], select {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(67,97,238,0.1);
+    }
+    textarea::placeholder, input::placeholder { color: var(--muted); }
+    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238890ab' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%; padding: 10px;
+      border: none; border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12.5px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--gradient); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(67,97,238,0.3); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-ghost { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: rgba(67,97,238,0.06); }
+    .btn-sm { padding: 6px 12px; font-size: 11px; width: auto; }
+    .btn-icon { width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; border-radius: 8px; }
+
+    /* ── Result box ── */
+    .result-box {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 12px;
+      font-size: 12px; line-height: 1.7; color: var(--text);
+      max-height: 180px; overflow-y: auto;
+      display: none; white-space: pre-wrap;
+    }
+    .result-box.visible { display: block; }
+    .result-box::-webkit-scrollbar { width: 4px; }
+    .result-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── Copy btn ── */
+    .copy-btn {
+      display: none; align-items: center; gap: 6px;
+      margin-top: 8px; padding: 6px 12px;
+      background: transparent;
+      border: 1.5px solid var(--success);
+      border-radius: 6px; color: var(--success);
+      font-size: 11px; font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: all 0.2s; width: fit-content;
+    }
+    .copy-btn.visible { display: flex; }
+    .copy-btn:hover { background: var(--success); color: #fff; }
+
+    /* ── Score card ── */
+    .score-ring-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .score-ring {
+      position: relative; width: 60px; height: 60px; flex-shrink: 0;
+    }
+    .score-ring svg { transform: rotate(-90deg); }
+    .score-ring-text {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: var(--accent);
+    }
+    .score-detail h3 { font-size: 15px; font-weight: 700; color: var(--text); }
+    .score-detail p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .score-bar-wrap {
+      background: var(--border); border-radius: 4px;
+      height: 5px; overflow: hidden; margin-top: 6px;
+    }
+    .score-bar {
+      height: 100%; background: var(--gradient);
+      border-radius: 4px; width: 0%;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Tip list ── */
+    .tip-list { list-style: none; }
+    .tip-list li {
+      display: flex; gap: 8px; align-items: flex-start;
+      font-size: 11.5px; color: var(--text);
+      padding: 7px 0; border-bottom: 1px solid var(--border);
+    }
+    .tip-list li:last-child { border-bottom: none; }
+    .tip-icon { color: var(--accent); flex-shrink: 0; font-style: normal; }
+
+    /* ── Tracker ── */
+    .tracker-list { max-height: 240px; overflow-y: auto; }
+    .tracker-list::-webkit-scrollbar { width: 3px; }
+    .tracker-list::-webkit-scrollbar-thumb { background: var(--border); }
+    .tracker-item {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 9px; padding: 10px 12px;
+      margin-bottom: 7px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .tracker-item:hover { border-color: var(--accent); }
+    .company-logo {
+      width: 30px; height: 30px; border-radius: 7px;
+      background: var(--gradient); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+    }
+    .tracker-info { flex: 1; min-width: 0; }
+    .tracker-company { font-weight: 600; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tracker-role { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tracker-date { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .tracker-badge {
+      font-size: 9.5px; padding: 3px 8px;
+      border-radius: 20px; font-weight: 600; flex-shrink: 0;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .badge-wishlist { background: #fef3c7; color: #92400e; }
+    .badge-applied { background: #dbeafe; color: #1d4ed8; }
+    .badge-interview { background: #d1fae5; color: #065f46; }
+    .badge-offer { background: #ede9fe; color: #5b21b6; }
+    .badge-rejected { background: #fee2e2; color: #991b1b; }
+
+    /* ── Stats bar ── */
+    .stats-row {
+      display: flex; gap: 8px; margin-bottom: 10px;
+    }
+    .stat-chip {
+      flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 8px 10px; text-align: center;
+    }
+    .stat-num { font-size: 18px; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 9.5px; color: var(--muted); margin-top: 1px; }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center; padding: 24px 16px;
+      color: var(--muted); font-size: 12px; line-height: 1.7;
+    }
+    .empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block; width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 5px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Settings ── */
+    .setting-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 12.5px;
+    }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-label { color: var(--text); }
+    .setting-sub { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+    .toggle {
+      width: 36px; height: 20px; background: var(--border);
+      border-radius: 20px; position: relative;
+      cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle::after {
+      content:''; position: absolute;
+      width: 14px; height: 14px; background: #fff;
+      border-radius: 50%; top: 3px; left: 3px;
+      transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle.on::after { left: 19px; }
+
+    /* ── Alerts ── */
+    .alert {
+      padding: 8px 12px; border-radius: 7px;
+      font-size: 11.5px; line-height: 1.5;
+      margin-bottom: 10px; display: none;
+    }
+    .alert.visible { display: block; }
+    .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .alert-info { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+
+    /* ── Row util ── */
+    .row { display: flex; gap: 8px; align-items: center; }
+    .mt8 { margin-top: 8px; }
+    .mt10 { margin-top: 10px; }
+    .mt12 { margin-top: 12px; }
+    .mb8 { margin-bottom: 8px; }
+    .mb10 { margin-bottom: 10px; }
+
+    /* ── Tone selector ── */
+    .tone-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tone-chip {
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--muted);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .tone-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ── API key field ── */
+    .api-key-wrap { position: relative; }
+    .api-key-wrap input { padding-right: 38px; }
+    .eye-btn {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 14px; padding: 2px;
+    }
+
+    /* ── Source badge ── */
+    .source-badge {
+      font-size: 9px; padding: 2px 6px; border-radius: 10px;
+      background: var(--surface2); color: var(--muted);
+      border: 1px solid var(--border); margin-left: 6px;
+      font-weight: 500; vertical-align: middle;
+    }
+
+    /* ── Delete btn ── */
+    .delete-btn {
+      background: none; border: none;
+      color: var(--muted); cursor: pointer;
+      font-size: 14px; padding: 2px 4px; line-height: 1;
+      border-radius: 4px; transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .delete-btn:hover { color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">CA</div>
+    <div class="header-text">
+      <h1>AI Career Assistant</h1>
+      <p>Powered by Groq · LLaMA 3.3 70B · Free</p>
+    </div>
+    <div class="header-right">
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span id="pageStatus">Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tab-btn-cover">
+      <span class="tab-icon">✍️</span>Cover Letter
+    </button>
+    <button class="tab" id="tab-btn-tracker">
+      <span class="tab-icon">📋</span>Tracker
+    </button>
+    <button class="tab" id="tab-btn-profile">
+      <span class="tab-icon">⭐</span>Profile
+    </button>
+    <button class="tab" id="tab-btn-autofill">
+      <span class="tab-icon">⚡</span>Autofill
+    </button>
+    <button class="tab" id="tab-btn-settings">
+      <span class="tab-icon">⚙️</span>Settings
+    </button>
+  </div>
+
+  <!-- ═══ COVER LETTER PANEL ═══ -->
+  <div class="panel active" id="tab-cover">
+
+    <div class="alert alert-info" id="coverAlert"></div>
+
+    <div class="label">Job Description</div>
+    <textarea id="jobDesc" rows="4" placeholder="Paste the job description, or click Auto-detect below…"></textarea>
+
+    <div class="row mt8 mb8">
+      <button class="btn btn-ghost" style="flex:1" id="autoDetectBtn">🔍 Auto-detect</button>
+      <button class="btn btn-ghost btn-sm" id="clearJobBtn" style="width:auto;padding:9px 14px">Clear</button>
+    </div>
+
+    <div class="label">Tone</div>
+    <div class="tone-chips" id="toneChips">
+      <div class="tone-chip active" data-tone="professional">Professional</div>
+      <div class="tone-chip" data-tone="enthusiastic">Enthusiastic</div>
+      <div class="tone-chip" data-tone="concise">Concise</div>
+      <div class="tone-chip" data-tone="creative">Creative</div>
+    </div>
+
+    <div class="label">Your Background (optional)</div>
+    <textarea id="userBg" rows="2" placeholder="e.g. 4 years React experience, built SaaS products used by 10k+ users…"></textarea>
+
+    <button class="btn btn-primary mt10" id="generateBtn">✨ Generate Cover Letter</button>
+
+    <div id="resultSection" style="display:none">
+      <div class="label mt12">Generated Cover Letter</div>
+      <div class="result-box visible" id="resultBox"></div>
+      <div class="row mt8">
+        <button class="copy-btn visible" id="copyBtn"><span>📋</span> Copy</button>
+        <button class="btn btn-ghost btn-sm" id="saveLetterBtn" style="margin-left:auto">💾 Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TRACKER PANEL ═══ -->
+  <div class="panel" id="tab-tracker">
+
+    <div class="stats-row" id="statsRow">
+      <div class="stat-chip"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+      <div class="stat-chip"><div class="stat-num" id="stat-interview">0</div><div class="stat-label">Interviews</div></div>
+      <div class="stat-chip"><div class="stat-num" id="stat-offer">0</div><div class="stat-label">Offers</div></div>
+    </div>
+
+    <div class="row mb8">
+      <div class="label" style="margin:0;flex:1">Applications</div>
+      <select id="filterStatus" style="width:auto;font-size:11px;padding:4px 24px 4px 8px;min-width:90px">
+        <option value="">All</option>
+        <option value="Wishlist">Wishlist</option>
+        <option value="Applied">Applied</option>
+        <option value="Interview">Interview</option>
+        <option value="Offer">Offer</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+
+    <div class="tracker-list" id="trackerList">
+      <div class="empty"><div class="empty-icon">📭</div>No applications yet.<br>Visit a job listing and click<br>"Track this job" below.</div>
+    </div>
+
+    <button class="btn btn-primary mt10" id="addJobBtn">+ Track current job listing</button>
+  </div>
+
+  <!-- ═══ PROFILE PANEL ═══ -->
+  <div class="panel" id="tab-profile">
+
+    <div class="card">
+      <div class="score-ring-wrap">
+        <div class="score-ring">
+          <svg width="60" height="60" viewBox="0 0 60 60">
+            <circle cx="30" cy="30" r="24" fill="none" stroke="#e2e5f0" stroke-width="5"/>
+            <circle id="scoreCircle" cx="30" cy="30" r="24" fill="none"
+              stroke="url(#grad)" stroke-width="5"
+              stroke-linecap="round"
+              stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+            <defs>
+              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#4361ee"/>
+                <stop offset="100%" stop-color="#7209b7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="score-ring-text" id="scoreNum">—</div>
+        </div>
+        <div class="score-detail">
+          <h3 id="scoreLabel">Not analyzed</h3>
+          <p id="scoreDesc">Go to your LinkedIn profile and click Analyze</p>
+          <div class="score-bar-wrap"><div class="score-bar" id="scoreBar"></div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="analyzeBtn">🔍 Analyze LinkedIn Profile</button>
+    </div>
+
+    <div class="label">Improvement Tips</div>
+    <ul class="tip-list" id="tipList">
+      <li><span class="tip-icon">💡</span> Navigate to your LinkedIn profile page, then click Analyze above.</li>
+    </ul>
+  </div>
+
+  <!-- ═══ AUTOFILL PANEL ═══ -->
+  <div class="panel" id="tab-autofill">
+
+    <div class="alert alert-success" id="autofillAlert"></div>
+
+    <div class="label">Saved Profile for Autofill</div>
+    <div class="card">
+      <div class="setting-row">
+        <div><div class="setting-label">Full Name</div></div>
+        <input type="text" id="af-name" placeholder="Your name" style="width:160px;font-size:12px;padding:6px 10px"/>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Email</div></div>
+        <input type="text" id="af-email" placeholder="you@email.com" style="width:160px;font-size:12px;padding:6px 10px"/>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Phone</div></div>
+        <input type="text" id="af-phone" placeholder="+91 9999999999" style="width:160px;font-size:12px;padding:6px 10px"/>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Location</div></div>
+        <input type="text" id="af-location" placeholder="City, Country" style="width:160px;font-size:12px;padding:6px 10px"/>
+      </div>
+      <div class="setting-row" style="border:none">
+        <div><div class="setting-label">LinkedIn URL</div></div>
+        <input type="text" id="af-linkedin" placeholder="linkedin.com/in/you" style="width:160px;font-size:12px;padding:6px 10px"/>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="saveProfileBtn">💾 Save Profile</button>
+    <button class="btn btn-ghost mt8" id="autofillNowBtn">⚡ Autofill current page</button>
+
+    <p style="font-size:10.5px;color:var(--muted);margin-top:12px;line-height:1.7">
+      Autofill works on LinkedIn Easy Apply, Indeed, Glassdoor, and Naukri forms. Your profile is stored locally only.
+    </p>
+  </div>
+
+  <!-- ═══ SETTINGS PANEL ═══ -->
+  <div class="panel" id="tab-settings">
+
+    <div class="alert alert-success" id="settingsAlert"></div>
+
+    <div class="label">Groq API Key</div>
+    <div class="api-key-wrap mb10">
+      <input type="password" id="apiKeyInput" placeholder="gsk_…  (free at console.groq.com)"/>
+      <button class="eye-btn" id="toggleEye" title="Show/hide">👁</button>
+    </div>
+    <button class="btn btn-primary" id="saveApiKeyBtn">Save API Key</button>
+
+    <div class="label mt12">Preferences</div>
+    <div class="card" style="padding:4px 12px">
+      <div class="setting-row">
+        <div><div class="setting-label">Auto-detect job on page load</div></div>
+        <div class="toggle on" id="toggle-autodetect"></div>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Show floating button on job pages</div></div>
+        <div class="toggle on" id="toggle-float"></div>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Formal tone by default</div></div>
+        <div class="toggle" id="toggle-formal"></div>
+      </div>
+      <div class="setting-row" style="border:none">
+        <div><div class="setting-label">Save generated letters</div></div>
+        <div class="toggle on" id="toggle-save"></div>
+      </div>
+    </div>
+
+    <div class="label mt12">Danger Zone</div>
+    <button class="btn btn-ghost" id="clearDataBtn" style="color:#ef233c;border-color:#fca5a5">🗑 Clear all saved data</button>
+
+    <p style="font-size:10.5px;color:var(--muted);margin-top:14px;line-height:1.6">
+      v2.0 · Groq API (LLaMA 3.3 70B) · Free, no billing · Data stored locally in Chrome only.
+    </p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
