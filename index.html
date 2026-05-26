@@ -1080,10 +1080,8 @@
     if (e.target === document.getElementById('modal')) closeModal();
   }
   function downloadExt() {
-    // Replace this URL with your actual hosted ZIP file URL
-    alert('Place your chrome-extension-groq.zip URL here!\n\nUpdate the downloadExt() function in the HTML with your actual ZIP download link.');
+    window.open('https://ai-assist-8wbc.vercel.app/career-extension.zip');
   }
-
   // Animate feature cards on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((e, i) => {
